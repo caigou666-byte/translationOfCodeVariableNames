@@ -128,8 +128,8 @@ void MainWindow::TranslationButton() {
     }
     QUrlQuery postData;
     postData.addQueryItem("word", ui->LeftInputBox->toPlainText());
-    postData.addQueryItem("named_type", "1");
-    postData.addQueryItem("translation_mode", "1");
+    postData.addQueryItem("named_type", QString::number(this->named_type));
+    postData.addQueryItem("translation_mode", QString::number(this->translation_mode));
     QNetworkRequest request(QUrl("https://fanyi.phpstudyhelper.com/TranslateWord"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     manager->post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
@@ -141,5 +141,5 @@ void MainWindow::translation_mode_CurrentIndexChanged(int index) {
 }
 
 void MainWindow::named_type_CurrentIndexChanged(int index) {
-    this->translation_mode = index + 1;
+    this->named_type = index + 1;
 }

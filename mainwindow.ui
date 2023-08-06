@@ -24,7 +24,7 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
-       <widget class="QComboBox" name="named_type">
+       <widget class="QComboBox" name="translation_mode">
         <property name="font">
          <font>
           <pointsize>14</pointsize>
@@ -43,7 +43,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="translation_mode">
+       <widget class="QComboBox" name="named_type">
         <property name="font">
          <font>
           <pointsize>14</pointsize>
@@ -83,6 +83,9 @@
           <family>微软雅黑</family>
           <pointsize>12</pointsize>
          </font>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
         </property>
         <property name="text">
          <string>翻译</string>
