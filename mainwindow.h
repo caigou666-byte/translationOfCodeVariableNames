@@ -17,6 +17,8 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    int named_type = 1;
+    int translation_mode = 1;
 private
     slots:
             void onCheckBoxStateChanged(int
@@ -35,6 +37,10 @@ private
     void RightCopy();
 
     void TranslationButton();
+
+    void translation_mode_CurrentIndexChanged(int index);
+
+    void named_type_CurrentIndexChanged(int index);
 };
 
 #endif // MAINWINDOW_H

@@ -24,7 +24,7 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
-       <widget class="QComboBox" name="comboBox">
+       <widget class="QComboBox" name="named_type">
         <property name="font">
          <font>
           <pointsize>14</pointsize>
@@ -43,7 +43,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="comboBox_2">
+       <widget class="QComboBox" name="translation_mode">
         <property name="font">
          <font>
           <pointsize>14</pointsize>
@@ -100,8 +100,7 @@
        </font>
       </property>
       <property name="styleSheet">
-       <string notr="true">
-</string>
+       <string notr="true"/>
       </property>
       <property name="text">
        <string>窗口置顶</string>

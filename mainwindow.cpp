@@ -10,6 +10,8 @@
 #include <QDebug>
 #include <QUrlQuery>
 #include<iostream>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 using namespace std;
 
@@ -28,6 +30,13 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->RightCopy, &QPushButton::clicked, this, &MainWindow::RightCopy);
 
     connect(ui->TranslationButton, &QPushButton::clicked, this, &MainWindow::TranslationButton);
+
+    // 连接currentIndexChanged信号到槽函数
+    connect(ui->named_type, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &MainWindow::named_type_CurrentIndexChanged);
+    connect(ui->translation_mode, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &MainWindow::translation_mode_CurrentIndexChanged);
+
 }
 
 MainWindow::~MainWindow() {
@@ -85,39 +94,52 @@ void MainWindow::RightCopy() {
 }
 
 void MainWindow::TranslationButton() {
-    cout << 1 << endl;
-// 创建网络访问管理器
-    QNetworkAccessManager manager;
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
 
-    // 创建请求对象
-    QNetworkRequest request;
-    request.setUrl(QUrl("https://fanyi.phpstudyhelper.com/TranslateWord"));
-
-    // 设置请求头
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-
-    // 创建请求参数
-    QUrlQuery params;
-    params.addQueryItem("word", "%E7%BF%BB%E8%AF%91%E6%8C%89%E9%92%AE");
-    params.addQueryItem("named_type", "2");
-    params.addQueryItem("translation_mode", "1");
-
-    // 将请求参数编码为请求体
-    QByteArray requestBody = params.toString(QUrl::FullyEncoded).toUtf8();
-
-    // 发送POST请求
-    QNetworkReply *reply = manager.post(request, requestBody);
-
-    // 连接请求完成信号
-    QObject::connect(reply, &QNetworkReply::finished, [&]() {
-        // 读取响应数据
-        QByteArray responseData = reply->readAll();
-
-        // 打印响应结果
-        qDebug() << "Response: " << responseData;
-
-        // 释放资源
+    connect(manager, &QNetworkAccessManager::finished, this, [this](QNetworkReply *reply) {
+        if (reply->error()) {
+            qDebug() << "ERROR: " << reply->errorString();
+        } else {
+            QByteArray byteArray = reply->readAll();
+            QJsonDocument jsonDoc = QJsonDocument::fromJson(byteArray);
+            if (!jsonDoc.isNull()) {// 检查JSON是否有效
+                QJsonObject jsonObj = jsonDoc.object();// 将JSON转换为QJsonObject
+                if (jsonObj.contains("data")) {// 检查data字段是否存在
+                    QJsonValue dataValue = jsonObj.value("data");// 获取data字段的值
+                    if (dataValue.isObject()) {// 检查data字段的值是否是对象类型
+                        QJsonObject dataObj = dataValue.toObject();// 将data字段的值转换为QJsonObject
+                        if (dataObj.contains("word")) {// 检查word字段是否存在
+                            QJsonValue wordValue = dataObj.value("word");// 获取word字段的值
+                            if (wordValue.isString()) { // 检查word字段的值是否是字符串类型
+                                QString word = wordValue.toString();// 获取word字段的字符串值
+                                qDebug() << "Word: " << word;// 输出word字段的值
+                                this->ui->RightInputBox->setPlainText(word);
+                            }
+                        }
+                    }
+                }
+            }
+        }
         reply->deleteLater();
-
     });
+    if (this->ui->LeftInputBox->toPlainText() == "") {
+        qDebug() << "左输入框内容为空！";
+        return;
+    }
+    QUrlQuery postData;
+    postData.addQueryItem("word", ui->LeftInputBox->toPlainText());
+    postData.addQueryItem("named_type", "1");
+    postData.addQueryItem("translation_mode", "1");
+    QNetworkRequest request(QUrl("https://fanyi.phpstudyhelper.com/TranslateWord"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    manager->post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
+}
+
+
+void MainWindow::translation_mode_CurrentIndexChanged(int index) {
+    this->translation_mode = index + 1;
+}
+
+void MainWindow::named_type_CurrentIndexChanged(int index) {
+    this->translation_mode = index + 1;
 }
