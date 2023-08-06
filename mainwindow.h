@@ -17,6 +17,15 @@ public:
 
 private:
     Ui::MainWindow *ui;
+private slots:
+    void onCheckBoxStateChanged(int state);
+    void LeftClearContent();
+    void PasteLeft();
+    void LeftCopy();
+    void RightClearContent();
+    void PasteRight();
+    void RightCopy();
+    void TranslationButton();
 };
 
 #endif // MAINWINDOW_H
